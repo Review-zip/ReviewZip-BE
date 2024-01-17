@@ -1,29 +1,28 @@
-package com.example.ReviewZIP.domain.search;
+package com.example.ReviewZIP.domain.post;
 
-import com.example.ReviewZIP.domain.post.Post;
-import com.example.ReviewZIP.domain.search.dto.response.PostResponseDTO;
+import com.example.ReviewZIP.domain.post.dto.response.PostResponseDTO;
 import org.springframework.data.domain.Page;
 
 import java.util.List;
 import java.util.stream.Collectors;
 
-public class SearchConverter {
+public class PostsConverter {
 
-    public static PostResponseDTO.PostDTO convertToPostDTO(Post post) {
+    public static PostResponseDTO.PostDTO toPostDTO(Posts post) {
         return PostResponseDTO.PostDTO.builder()
                 .id(post.getId())
-                .user_id(post.getUserId())
-                .imgUrl(post.getImgUrl())
                 .comment(post.getComment())
                 .point(post.getPoint())
+                .flag(post.getIs_read())
+                .userId(post.getUser().getId())
                 .createdAt(post.getCreatedAt())
                 .updatedAt(post.getUpdatedAt())
                 .build();
     }
 
-    public static PostResponseDTO.PostListDTO convertToPostListDTO(Page<Post> postList) {
+    public static PostResponseDTO.PostListDTO toPostListDTO(Page<Posts> postList) {
         List<PostResponseDTO.PostDTO> postDTOList = postList.stream()
-                .map(SearchConverter::convertToPostDTO)
+                .map(PostsConverter::toPostDTO)
                 .collect(Collectors.toList());
 
         return PostResponseDTO.PostListDTO.builder()

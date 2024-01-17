@@ -1,4 +1,4 @@
-package com.example.ReviewZIP.domain.postHashtag;
+package com.example.ReviewZIP.domain.posthashtag;
 
 import com.example.ReviewZIP.domain.hashtag.Hashtags;
 import com.example.ReviewZIP.domain.post.Posts;

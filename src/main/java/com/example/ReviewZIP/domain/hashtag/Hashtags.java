@@ -18,4 +18,5 @@ public class Hashtags {
 
     @Column(name = "name", length = 50)
     private String name;
+
 }

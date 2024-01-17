@@ -1,13 +1,13 @@
-package com.example.ReviewZIP.domain.search.dto.response;
+package com.example.ReviewZIP.domain.post.dto.response;
 
-import jakarta.validation.constraints.NotBlank;
+
 import jakarta.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
-import java.time.LocalDateTime;
+import java.time.LocalDate;
 import java.util.List;
 
 public class PostResponseDTO {
@@ -29,22 +29,18 @@ public class PostResponseDTO {
     @NoArgsConstructor
     @AllArgsConstructor
     public static class PostDTO {
-        @NotNull
         private Long id;
 
-        private Long user_id;
-
-        @NotBlank
-        private String imgUrl;
-
-        @NotBlank
         private String comment;
 
         @NotNull
         private Double point;
 
-        private LocalDateTime createdAt;
+        private Boolean flag;
 
-        private LocalDateTime updatedAt;
+        private Long userId;
+
+        private LocalDate createdAt;
+        private LocalDate updatedAt;
     }
 }
