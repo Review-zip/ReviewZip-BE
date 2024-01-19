@@ -10,7 +10,7 @@ import lombok.NoArgsConstructor;
 import java.time.LocalDate;
 import java.util.List;
 
-public class PostResponseDTO {
+public class PostResponseDto {
     @Builder
     @Getter
     @NoArgsConstructor

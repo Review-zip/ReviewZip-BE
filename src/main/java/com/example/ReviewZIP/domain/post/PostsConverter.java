@@ -1,6 +1,6 @@
 package com.example.ReviewZIP.domain.post;
 
-import com.example.ReviewZIP.domain.post.dto.response.PostResponseDTO;
+import com.example.ReviewZIP.domain.post.dto.response.PostResponseDto;
 import org.springframework.data.domain.Page;
 
 import java.util.List;
@@ -8,8 +8,8 @@ import java.util.stream.Collectors;
 
 public class PostsConverter {
 
-    public static PostResponseDTO.PostDTO toPostDTO(Posts post) {
-        return PostResponseDTO.PostDTO.builder()
+    public static PostResponseDto.PostDTO toPostDTO(Posts post) {
+        return PostResponseDto.PostDTO.builder()
                 .id(post.getId())
                 .comment(post.getComment())
                 .point(post.getPoint())
@@ -20,12 +20,12 @@ public class PostsConverter {
                 .build();
     }
 
-    public static PostResponseDTO.PostListDTO toPostListDTO(Page<Posts> postList) {
-        List<PostResponseDTO.PostDTO> postDTOList = postList.stream()
+    public static PostResponseDto.PostListDTO toPostListDTO(Page<Posts> postList) {
+        List<PostResponseDto.PostDTO> postDTOList = postList.stream()
                 .map(PostsConverter::toPostDTO)
                 .collect(Collectors.toList());
 
-        return PostResponseDTO.PostListDTO.builder()
+        return PostResponseDto.PostListDTO.builder()
                 .isLast(postList.isLast())
                 .isFirst(postList.isFirst())
                 .totalPage(postList.getTotalPages())
