@@ -1,7 +1,8 @@
 package com.example.ReviewZIP.domain.post;
 
-import com.example.ReviewZIP.domain.hashtag.HashtagsService;
 import com.example.ReviewZIP.domain.post.dto.response.PostResponseDTO;
+import com.example.ReviewZIP.domain.postHashtag.PostHashtagsService;
+import com.example.ReviewZIP.global.response.ApiResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.http.ResponseEntity;
@@ -16,12 +17,12 @@ import org.springframework.web.bind.annotation.RestController;
 @RequestMapping("/v1/posts")
 public class PostsController {
 
-    private final HashtagsService hashtagsService;
+    private final PostHashtagsService postHashtagsService;
 
     @GetMapping("/search/hashtags")
-    public ResponseEntity<PostResponseDTO.PostListDTO> searchPostsByHashtagId(@RequestParam Long hashTagId, @RequestParam (defaultValue = "0") Integer page) {
-        Page<Posts> postPage = hashtagsService.findPostsByHashtagId(hashTagId, page);
+    public ApiResponse<PostResponseDTO.PostListDTO> searchPostsByHashtagId(@RequestParam Long id, @RequestParam (defaultValue = "0") Integer page) {
+        Page<Posts> postPage = postHashtagsService.findPostsByHashtagId(id, page);
         PostResponseDTO.PostListDTO postListDTO = PostsConverter.toPostListDTO(postPage);
-        return ResponseEntity.ok(postListDTO);
+        return ApiResponse.onSuccess(postListDTO);
     }
 }
