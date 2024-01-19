@@ -18,6 +18,9 @@ public class PostHashtags {
     @Column(name = "id")
     private Long id;
 
+    @Column(name = "name", length = 50)
+    private String name;
+
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "post_id")
     private Posts post;

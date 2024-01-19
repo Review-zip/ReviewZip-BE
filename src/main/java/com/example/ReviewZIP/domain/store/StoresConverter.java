@@ -1,6 +1,6 @@
 package com.example.ReviewZIP.domain.store;
 
-import com.example.ReviewZIP.domain.store.dto.response.StoreResponseDTO;
+import com.example.ReviewZIP.domain.store.dto.response.StoreResponseDto;
 import org.springframework.data.domain.Page;
 
 import java.util.List;
@@ -8,8 +8,8 @@ import java.util.stream.Collectors;
 
 public class StoresConverter {
 
-    public static StoreResponseDTO.StoreDTO toStoreDTO(Stores store) {
-        return StoreResponseDTO.StoreDTO.builder()
+    public static StoreResponseDto.StoreDto toStoreDto(Stores store) {
+        return StoreResponseDto.StoreDto.builder()
                 .id(store.getId())
                 .name(store.getName())
                 .postId(store.getPost().getId())
@@ -21,12 +21,12 @@ public class StoresConverter {
                 .build();
     }
 
-    public static StoreResponseDTO.StoreListDTO toStoreListDTO(Page<Stores> storeList) {
-        List<StoreResponseDTO.StoreDTO> storeDTOList = storeList.stream()
-                .map(StoresConverter::toStoreDTO)
+    public static StoreResponseDto.StoreListDto toStoreListDto(Page<Stores> storeList) {
+        List<StoreResponseDto.StoreDto> storeDTOList = storeList.stream()
+                .map(StoresConverter::toStoreDto)
                 .collect(Collectors.toList());
 
-        return StoreResponseDTO.StoreListDTO.builder()
+        return StoreResponseDto.StoreListDto.builder()
                 .isLast(storeList.isLast())
                 .isFirst(storeList.isFirst())
                 .totalPage(storeList.getTotalPages())

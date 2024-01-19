@@ -11,14 +11,14 @@ import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.util.List;
 
-public class StoreResponseDTO {
+public class StoreResponseDto {
 
     @Builder
     @Getter
     @NoArgsConstructor
     @AllArgsConstructor
-    public static class StoreListDTO {
-        List<StoreDTO> storeList;
+    public static class StoreListDto {
+        List<StoreDto> storeList;
         Integer listSize;
         Integer totalPage;
         Long totalElements;
@@ -30,7 +30,7 @@ public class StoreResponseDTO {
     @Getter
     @NoArgsConstructor
     @AllArgsConstructor
-    public static class StoreDTO {
+    public static class StoreDto {
         private Long id;
 
         @NotBlank
