@@ -9,19 +9,18 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 import com.example.ReviewZIP.domain.postHashtag.PostHashtags;
 
+import java.util.List;
+import java.util.stream.Collectors;
+
 @Service
 @RequiredArgsConstructor
 public class PostHashtagsService {
 
     private final PostHashtagsRepository postHashtagRepository;
 
-    public Page<Posts> findPostsByHashtagId(Long hashtagId, int page) throws PostHashtagsHandler {
-        Page<PostHashtags> postHashtags = postHashtagRepository.findById(hashtagId, PageRequest.of(page, 10));
-
-        if (postHashtags.isEmpty()) {
-            throw new PostHashtagsHandler(ErrorStatus.HASHTAG_NOT_FOUND);
-        }
-
-        return postHashtags.map(PostHashtags::getPost);
+    public List<PostHashtags> searchHashtagsById(Long id) {
+        String hashtagsName = postHashtagRepository.findById(id).orElseThrow(() -> new PostHashtagsHandler(ErrorStatus.HASHTAG_NOT_FOUND)).getHashtag();
+        List<PostHashtags> hashtagsList = postHashtagRepository.findByNameContaining(hashtagsName);
+        return hashtagsList;
     }
 }
