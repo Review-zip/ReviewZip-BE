@@ -1,11 +1,5 @@
 package com.example.ReviewZIP.domain.post.dto.response;
 
-import lombok.*;
-
-import java.time.LocalDateTime;
-import java.util.List;
-
-
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -62,4 +56,5 @@ public class PostResponseDto {
         private Double point;
         private List<Long> imageIds;
     }
+
 }
