@@ -15,7 +15,22 @@ public class UsersConverter {
         return UserResponseDto.UserPreviewDto.builder()
                 .id(user.getId())
                 .nickname(user.getNickname())
-                .profileImage(user.getProfileUrl())
+                .profileImages(user.getProfileUrl())
+                .build();
+    }
+
+    public static UserResponseDto.UserPreviewListDto toUserPreviewListDto(Page<Users> userList) {
+        List<UserResponseDto.UserPreviewDto> userDTOList = userList.stream()
+                .map(UsersConverter::toUserPreviewDto)
+                .collect(Collectors.toList());
+
+        return UserResponseDto.UserPreviewListDto.builder()
+                .isLast(userList.isLast())
+                .isFirst(userList.isFirst())
+                .totalPage(userList.getTotalPages())
+                .totalElements(userList.getTotalElements())
+                .listSize(userDTOList.size())
+                .userList(userDTOList)
                 .build();
     }
 
@@ -33,6 +48,7 @@ public class UsersConverter {
                 .userList(userDtoList)
                 .build();
     }
+
 
     // 팔로잉 목록 converter
     public static FollowResponseDto.FollowingPreviewDto toFollowingPreviewDto(Follows follows){
@@ -114,7 +130,7 @@ public class UsersConverter {
                 .build();
     }
 
-    public static UserResponseDto.PostPreviewListDto toScrabPreviewListDto(Page<Scrabs> scrabList){
+    public static UserResponseDto.PostPreviewListDto toScrabPreviewListDto(Page<Scrabs> scrabList) {
         List<UserResponseDto.PostPreviewDto> scrabPriviewDtoList = scrabList.stream()
                 .map(UsersConverter::toScrabPreviewDto).collect(Collectors.toList());
 
@@ -125,6 +141,21 @@ public class UsersConverter {
                 .totalPage(scrabList.getTotalPages())
                 .listSize(scrabPriviewDtoList.size())
                 .postList(scrabPriviewDtoList)
+                .build();
+    }
+
+    public static UserResponseDto.UserInfoDto toOtherInfoDto(Users user, Integer followingNum, Integer followerNum, boolean isFollowing){
+
+        String imageUrl = (user.getProfileUrl() != null) ? user.getProfileUrl() : null;
+
+        return UserResponseDto.UserInfoDto.builder()
+                .userId(user.getId())
+                .name(user.getName())
+                .nickname(user.getNickname())
+                .profileUrl(imageUrl)
+                .followingNum(followingNum)
+                .followerNum(followerNum)
+                .isFollowing(isFollowing)
                 .build();
     }
 }
