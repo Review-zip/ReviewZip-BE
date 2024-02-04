@@ -9,7 +9,6 @@ import com.example.ReviewZIP.domain.user.UsersRepository;
 import org.springframework.data.domain.Page;
 import org.springframework.stereotype.Component;
 
-import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -76,13 +75,16 @@ public class PostsConverter {
                 .url(image.getUrl())
                 .build();
     }
-    public static PostResponseDto.PostInfoDto toPostInfoResultDto(Posts post, boolean checkLike, boolean checkScrab){
+    public static PostResponseDto.PostInfoDto toPostInfoResultDto(Users user,Posts post, boolean checkLike, boolean checkScrab, String createdAt){
         PostResponseDto.UserInfoDto userInfoDto = toUserInfoDto(post.getUser());
 
         List<PostResponseDto.ImageListDto> imageListDto = post.getPostImageList().stream()
                 .map(PostsConverter::toImageListDto).collect(Collectors.toList());
 
-        LocalDateTime createdAt = post.getCreatedAt() != null ? post.getCreatedAt() : null;
+        boolean mine = false;
+        if(user.getId().equals(post.getUser().getId())) {
+            mine = true;
+        }
 
         return PostResponseDto.PostInfoDto.builder()
                 .postId(post.getId())
@@ -93,20 +95,21 @@ public class PostsConverter {
                 .checkScrab(checkScrab)
                 .hashtags(post.getPostHashtagList().stream().map(PostHashtags::getHashtag).collect(Collectors.toList()))
                 .userInfo(userInfoDto)
+                .checkMine(mine)
                 .postImages(imageListDto)
                 .createdAt(createdAt)
                 .build();
     }
 
-    public static List<PostResponseDto.PostUserLikeDto> toPostUserLikeListDto(List<Users> userList, List<Long> likeAndFollowingIdList){
+    public static List<PostResponseDto.PostUserLikeDto> toPostUserLikeListDto(List<Users> postLikeUserList, List<Long> followingIdList){
         List<PostResponseDto.PostUserLikeDto> postUserLikeDtoList = new ArrayList<>();
-        for(Users user : userList){
-            boolean isFollowing = likeAndFollowingIdList.contains(user.getId());
+        for(Users user : postLikeUserList){
+            boolean isFollowing = followingIdList.contains(user.getId());
             PostResponseDto.PostUserLikeDto postUserLikeDto = PostResponseDto.PostUserLikeDto.builder()
                     .userId(user.getId())
                     .nickname(user.getNickname())
                     .profileUrl(user.getProfileUrl())
-                    .isFollowing(isFollowing)
+                    .following(isFollowing)
                     .build();
             postUserLikeDtoList.add(postUserLikeDto);
         }

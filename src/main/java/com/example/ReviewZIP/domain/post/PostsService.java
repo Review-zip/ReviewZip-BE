@@ -1,6 +1,7 @@
 package com.example.ReviewZIP.domain.post;
 
 import com.example.ReviewZIP.domain.follow.Follows;
+import com.example.ReviewZIP.domain.follow.FollowsRepository;
 import com.example.ReviewZIP.domain.image.Images;
 import com.example.ReviewZIP.domain.image.ImagesRepository;
 import com.example.ReviewZIP.domain.post.dto.request.PostRequestDto;
@@ -9,6 +10,7 @@ import com.example.ReviewZIP.domain.postHashtag.PostHashtags;
 import com.example.ReviewZIP.domain.postHashtag.PostHashtagsRepository;
 import com.example.ReviewZIP.domain.postLike.PostLikes;
 import com.example.ReviewZIP.domain.postLike.PostLikesRepository;
+import com.example.ReviewZIP.domain.scrab.Scrabs;
 import com.example.ReviewZIP.domain.scrab.ScrabsRepository;
 import com.example.ReviewZIP.domain.user.Users;
 import com.example.ReviewZIP.domain.user.UsersRepository;
@@ -18,12 +20,18 @@ import com.example.ReviewZIP.global.response.exception.handler.PostLikesHandler;
 import com.example.ReviewZIP.global.response.exception.handler.PostsHandler;
 import com.example.ReviewZIP.global.response.exception.handler.UsersHandler;
 import lombok.RequiredArgsConstructor;
+import org.springframework.cglib.core.Local;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.Duration;
+import java.time.LocalDateTime;
+import java.time.ZoneId;
+import java.time.ZonedDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
@@ -40,6 +48,7 @@ public class PostsService {
     private final PostLikesRepository postLikesRepository;
     private final ScrabsRepository scrabsRepository;
     private final PostHashtagsRepository postHashtagsRepository;
+    private final FollowsRepository followsRepository;
 
     public Page<Posts> searchPostByHashtag (Long id, Integer page, Integer size){
         Page<PostHashtags> postHashtagsList = postHashtagsRepository.findPostHashtagsById(id, PageRequest.of(page,size));
@@ -100,7 +109,9 @@ public class PostsService {
                 Posts post = postPage.getContent().get(0);
                 boolean checkLike = postLikesRepository.existsByUserAndPost(user, post);
                 boolean checkScrab = scrabsRepository.existsByUserAndPost(user, post);
-                randomPostInfoDtos.add(PostsConverter.toPostInfoResultDto(post, checkLike, checkScrab));
+                String createdAt = getCreatedAt(post.getCreatedAt());
+
+                randomPostInfoDtos.add(PostsConverter.toPostInfoResultDto(user, post, checkLike, checkScrab, createdAt));
             }
         }
 
@@ -115,7 +126,33 @@ public class PostsService {
         boolean checkLike = postLikesRepository.existsByUserAndPost(user, post);
         boolean checkScrab = scrabsRepository.existsByUserAndPost(user, post);
 
-        return PostsConverter.toPostInfoResultDto(post, checkLike, checkScrab);
+        String createdAt = getCreatedAt(post.getCreatedAt());
+
+        return PostsConverter.toPostInfoResultDto(user, post, checkLike, checkScrab, createdAt);
+    }
+
+    public String getCreatedAt(LocalDateTime createdAt){
+
+        // 서버시간을 UTC로 설정
+        ZoneId serverZone = ZoneId.of("UTC");
+        LocalDateTime now = ZonedDateTime.now(serverZone).toLocalDateTime();
+
+        Duration duration = Duration.between(createdAt, now);
+
+        long seconds = duration.getSeconds();
+        long minutes = duration.toMinutes();
+        long hours = duration.toHours();
+
+        if (minutes < 1){
+            return seconds + "초 전";
+        } else if (minutes < 60){
+            return minutes + "분 전";
+        } else if (hours < 24){
+            return hours + "시간 전";
+        } else {
+            DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy년 MM월 dd일");
+            return createdAt.format(formatter);
+        }
     }
 
     @Transactional
@@ -154,10 +191,11 @@ public class PostsService {
     public List<Long> getFollowigIdList(){
         // 일단 1L로 나를 대체
         Users me = usersRepository.getById(1L);
+        List<Follows> followingList = followsRepository.findAllBySender(me);
         List<Long> followingIdList = new ArrayList<>();
-        List<Follows> followingList = me.getFollowingList();
+
         for (Follows following : followingList){
-            Long followingId = following.getId();
+            Long followingId = following.getReceiver().getId();
             followingIdList.add(followingId);
         }
         return followingIdList;
@@ -167,4 +205,28 @@ public class PostsService {
         return  postLikesRepository.findUsersByPostId(postId);
     }
 
+    @Transactional
+    public void createScrabs(Long postId){
+        // userId는 1로 대체
+        Users me = usersRepository.getById(1L);
+        Posts post = postsRepository.findById(postId).orElseThrow(()->new PostsHandler(ErrorStatus.POST_NOT_FOUND));
+
+        Scrabs newScrab = Scrabs.builder()
+                .user(me)
+                .post(post)
+                .build();
+
+        scrabsRepository.save(newScrab);
+    }
+
+    @Transactional
+    public void deleteScrabs(Long postId){
+        // userId는 1로 대체
+        Users me = usersRepository.getById(1L);
+        Posts post = postsRepository.findById(postId).orElseThrow(()->new PostsHandler(ErrorStatus.POST_NOT_FOUND));
+
+        Scrabs scrabs = scrabsRepository.findByUserAndPost(me, post);
+
+        scrabsRepository.delete(scrabs);
+    }
 }

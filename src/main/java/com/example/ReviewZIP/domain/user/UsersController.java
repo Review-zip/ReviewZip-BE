@@ -6,8 +6,7 @@ import com.example.ReviewZIP.domain.scrab.Scrabs;
 import com.example.ReviewZIP.domain.user.dto.response.FollowResponseDto;
 import com.example.ReviewZIP.domain.user.dto.response.UserResponseDto;
 import com.example.ReviewZIP.global.response.ApiResponse;
-import com.example.ReviewZIP.global.response.code.resultCode.ErrorStatus;
-import com.example.ReviewZIP.global.response.exception.handler.PostsHandler;
+import com.example.ReviewZIP.global.response.code.resultCode.SuccessStatus;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.Parameters;
@@ -25,6 +24,7 @@ public class UsersController {
     private final UsersService usersService;
 
     @GetMapping("/search/name")
+    @Operation(summary = "이름으로 유저 검색 API",description = "유저의 이름으로 특정 유저를 검색 (자신이 팔로잉한 대상은 제외)")
     @ApiResponses({
             @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "COMMON200",description = "OK, 성공"),
             @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "USER408", description = "유저를 찾을 수 없음",content = @Content(schema = @Schema(implementation = ApiResponse.class))),
@@ -34,8 +34,8 @@ public class UsersController {
             @Parameter(name = "page", description = "페이지 번호"),
             @Parameter(name = "size", description = "페이징 사이즈")
     })
-    public ApiResponse<UserResponseDto.UserPreviewListDto> searchUsersByName(@RequestParam String name, @RequestParam (defaultValue = "0") Integer page) {
-        Page<Users> userPage = usersService.findUsersByName(name, page);
+    public ApiResponse<UserResponseDto.UserPreviewListDto> searchUsersByName(@RequestParam String name, @RequestParam (defaultValue = "0") Integer page, @RequestParam (defaultValue = "10") Integer size) {
+        Page<Users> userPage = usersService.findUsersByName(name, page, size);
         UserResponseDto.UserPreviewListDto userListDto = UsersConverter.toUserPreviewListDto(userPage);
         return ApiResponse.onSuccess(userListDto);
     }
@@ -51,7 +51,7 @@ public class UsersController {
             @Parameter(name = "page", description = "페이지 번호"),
             @Parameter(name = "size", description = "페이징 사이즈")
     })
-    public ApiResponse<UserResponseDto.UserPreviewListDto> searchUsersByNickname(@RequestParam String nickname, @RequestParam (defaultValue = "0") Integer page, @RequestParam (defaultValue = "0") Integer size) {
+    public ApiResponse<UserResponseDto.UserPreviewListDto> searchUsersByNickname(@RequestParam String nickname, @RequestParam (defaultValue = "0") Integer page, @RequestParam (defaultValue = "10") Integer size) {
         Page<Users> userPage = usersService.findUsersByNickname(nickname, page, size);
         UserResponseDto.UserPreviewListDto userListDto = UsersConverter.toUserListDto(userPage);
         return ApiResponse.onSuccess(userListDto);
@@ -74,7 +74,7 @@ public class UsersController {
     }
 
     @GetMapping("/me/followers")
-    @Operation(summary = "나의 팔로워 목록 가져오기 API",description = "토큰 인증 후 나의 팔로잉 목록 조회, FollowerPreviewDto와 FollowerPreviewListDto 이용, 임시로 user id 1의 팔로잉 목록 반환")
+    @Operation(summary = "나의 팔로워 목록 가져오기 API",description = "토큰 인증 후 나의 팔로워 목록 조회, FollowerPreviewDto와 FollowerPreviewListDto 이용, 임시로 user id 1의 팔로잉 목록 반환")
     @ApiResponses({
             @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "COMMON200",description = "OK, 성공"),
             @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "USER404", description = "토큰에 해당하는 유저 없음",content = @Content(schema = @Schema(implementation = ApiResponse.class))),
@@ -83,13 +83,15 @@ public class UsersController {
             @Parameter(name = "page", description = "페이지 번호"),
             @Parameter(name = "size", description = "페이징 사이즈")
     })
-    public ApiResponse<FollowResponseDto.FollowingPreviewListDto> getUserFollowerList(@RequestParam(name = "page") Integer page, @RequestParam(name = "size")Integer size){
-        Page<Follows> FollowsPage = usersService.getFollowingList(1l, page, size); //수정 필요
 
-        return ApiResponse.onSuccess(UsersConverter.toFollowingPreviewListDto(FollowsPage));
+    public ApiResponse<FollowResponseDto.FollowerPreviewListDto> getUserFollowerList(@RequestParam(name = "page") Integer page, @RequestParam(name = "size")Integer size){
+
+        Page<Follows> FollowsPage = usersService.getFollowerList(1L, page, size); //수정 필요
+
+        return ApiResponse.onSuccess(UsersConverter.toFollowerPreviewListDto(FollowsPage));
     }
 
-    @GetMapping("/{userId}/following")
+    @GetMapping("/{userId}/followings")
     @Operation(summary = "특정 유저의 팔로잉 목록 가져오기 API",description = "특정 유저의 id를 이용하여 해당 유저의 팔로잉 목록 조회, FollowingPreviewDto와 FollowingPreviewListDto 이용")
     @ApiResponses({
             @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "COMMON200",description = "OK, 성공"),
@@ -214,8 +216,8 @@ public class UsersController {
     @Parameters({
             @Parameter(name = "userId", description = "유저의 아이디"),
     })
-    public ApiResponse<Void> deleteUser(@PathVariable(name = "userId")Long userId) {
+    public ApiResponse<SuccessStatus> deleteUser(@PathVariable(name = "userId")Long userId) {
         usersService.deleteUser(userId);
-        return ApiResponse.onSuccess(null);
+        return ApiResponse.onSuccess(SuccessStatus._OK);
     }
 }

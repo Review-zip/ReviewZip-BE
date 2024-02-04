@@ -61,7 +61,8 @@ public class PostResponseDto {
         private Integer likeNum;
         private boolean checkLike;
         private boolean checkScrab;
-        private LocalDateTime createdAt;
+        private boolean checkMine;
+        private String createdAt;
         private UserInfoDto userInfo;
         private List<String> hashtags;
         private List<ImageListDto> postImages;
@@ -87,7 +88,7 @@ public class PostResponseDto {
         private Long userId;
         private String nickname;
         private String profileUrl;
-        private boolean isFollowing;
+        private boolean following;
     }
 
     @Getter
@@ -95,7 +96,7 @@ public class PostResponseDto {
     @NoArgsConstructor
     @AllArgsConstructor
     public static class PostUserLikeListDto{
-        List<PostUserLikeDto> userLikeDto;
+        private List<PostUserLikeDto> userLikeDto;
     }
 
 }
