@@ -62,11 +62,8 @@ public enum ErrorStatus implements BaseErrorCode {
 
     // JWT
     INVALID_ACCESS_TOKEN(HttpStatus.UNAUTHORIZED, "AUTH001", "유효하지 않은 ACCESS 토큰입니다."),
-
     EXPIRED_MEMBER_TOKEN(HttpStatus.UNAUTHORIZED, "AUTH002", "만료된 JWT 토큰입니다."),
-
     UNSUPPORTED_TOKEN(HttpStatus.UNAUTHORIZED, "AUTH003", "지원되지 않는 JWT 토큰입니다."),
-
     ILLEGALARGUMENT_TOKEN(HttpStatus.BAD_REQUEST, "AUTH004", "잘못된 JWT 토큰입니다.");
 
     private final HttpStatus httpStatus;

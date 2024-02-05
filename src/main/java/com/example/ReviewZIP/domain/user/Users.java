@@ -5,10 +5,10 @@ import com.example.ReviewZIP.domain.post.Posts;
 import com.example.ReviewZIP.domain.postLike.PostLikes;
 import com.example.ReviewZIP.domain.scrab.Scrabs;
 import com.example.ReviewZIP.domain.searchHistory.SearchHistories;
+import com.example.ReviewZIP.domain.token.dto.SignUpRequestDto;
 import com.example.ReviewZIP.global.entity.BaseEntity;
 import jakarta.persistence.*;
 import lombok.*;
-import org.hibernate.annotations.ColumnDefault;
 import org.hibernate.annotations.SQLDelete;
 import org.hibernate.annotations.Where;
 
@@ -69,4 +69,18 @@ public class Users extends BaseEntity {
 
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL)
     private List<SearchHistories> searchHistoriesList = new ArrayList<>();
+
+    @OneToMany(mappedBy = "object", cascade = CascadeType.ALL)
+    private List<SearchHistories> objectList = new ArrayList<>();
+
+    public static Users toEntity(SignUpRequestDto signUpRequestDto) {
+        return Users.builder()
+                .email(signUpRequestDto.getEmail())
+                .password(signUpRequestDto.getPassword())
+                .name(signUpRequestDto.getName())
+                .nickname(signUpRequestDto.getNickname())
+                .phone_num(signUpRequestDto.getPhoneNum())
+                .status(Status.ENABLED)
+                .build();
+    }
 }
