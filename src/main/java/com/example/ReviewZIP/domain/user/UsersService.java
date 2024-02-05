@@ -31,7 +31,6 @@ public class UsersService {
     private final FollowsRepository followsRepository;
     private final PostsRepository postsRepository;
     private final ScrabsRepository scrabsRepository;
-    private final SearchHistoriesRepository searchHistoriesRepository;
 
     public Page<Users> findUsersByName(String name, Integer page, Integer size) {
         Page<Users> pageUsers = usersRepository.findByName(name, PageRequest.of(page, size));

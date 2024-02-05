@@ -60,6 +60,7 @@ public enum ErrorStatus implements BaseErrorCode {
     // Follow
     FOLLOW_ALREADY(HttpStatus.BAD_REQUEST, "FOLLOW401", "이미 팔로우한 상태입니다.");
 
+
     private final HttpStatus httpStatus;
     private final String code;
     private final String message;

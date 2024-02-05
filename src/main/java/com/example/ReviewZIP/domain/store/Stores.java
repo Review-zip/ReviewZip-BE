@@ -27,10 +27,10 @@ public class Stores extends BaseEntity {
     private String address;
 
     @Column(nullable = false)
-    private BigDecimal longitude;
+    private Double longitude;
 
     @Column(nullable = false)
-    private BigDecimal latitude;
+    private Double latitude;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "post_id")
