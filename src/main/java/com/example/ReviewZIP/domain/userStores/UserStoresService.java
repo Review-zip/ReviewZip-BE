@@ -11,15 +11,18 @@ import com.example.ReviewZIP.global.response.exception.handler.StoresHandler;
 import com.example.ReviewZIP.global.response.exception.handler.UsersHandler;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 
 @Service
 @RequiredArgsConstructor
+@Transactional(readOnly = true)
 public class UserStoresService {
 
     private final UsersRepository usersRepository;
     private final UserStoresRepository userStoresRepository;
+    @Transactional
     public void createUserStores(UserStoresRequestDto.CreateUserStoresDto dto) {
 
         // 임의로 유저 아이디 값에 1L을 지정

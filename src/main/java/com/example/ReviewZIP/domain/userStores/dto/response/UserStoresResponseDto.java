@@ -27,7 +27,7 @@ public class UserStoresResponseDto {
     @AllArgsConstructor
     public static class StoreInfoListDto {
         List<StoreInfoDto> storeInfoDtoList;
-        private Integer saveNum;
+        private Integer savedStoresCount;
         private String nickname;
     }
 }

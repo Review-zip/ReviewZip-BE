@@ -35,7 +35,7 @@ public class UserStoresConverter {
 
         return UserStoresResponseDto.StoreInfoListDto.builder()
                 .storeInfoDtoList(storeInfoDtoList)
-                .saveNum(saveNum)
+                .savedStoresCount(saveNum)
                 .nickname(nickname)
                 .build();
     }
