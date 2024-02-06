@@ -7,6 +7,7 @@ import com.example.ReviewZIP.domain.token.dto.TokenDto;
 import com.example.ReviewZIP.domain.user.Users;
 import com.example.ReviewZIP.domain.user.UsersRepository;
 import com.example.ReviewZIP.global.config.jwt.JwtProvider;
+import com.example.ReviewZIP.global.config.security.UserDetailsImpl;
 import com.example.ReviewZIP.global.response.code.resultCode.ErrorStatus;
 import com.example.ReviewZIP.global.response.exception.GeneralException;
 import lombok.RequiredArgsConstructor;
@@ -34,7 +35,7 @@ public class RefreshTokenService {
 
         signUpRequestDto.setPassword(encodePassword(signUpRequestDto.getPassword()));
 
-        return SignUpResponseDto.toDto(usersRepository.save(Users.toEntity(signUpRequestDto)));
+        return SignUpResponseDto.signUpResponseDto(usersRepository.save(Users.toEntity(signUpRequestDto)));
     }
 
     public String encodePassword(String password) {
@@ -47,12 +48,16 @@ public class RefreshTokenService {
         // 1. Login ID/PW를 기반으로 AuthenticationToken 생성
         UsernamePasswordAuthenticationToken authenticationToken = new UsernamePasswordAuthenticationToken(loginRequestDto.getEmail(), loginRequestDto.getPassword());
 
-        // 2. authentication 메서드가 실행이 될 때, UserDetailsServiceImpl 에서 만들었던 loadUserByUsername 메서드가 실행됨
+        // 2. authentication이 실행이 될 때, UserDetailsServiceImpl 에서 만들었던 loadUserByUsername 메서드가 실행됨
         Authentication authentication = authenticationManagerBuilder.getObject().authenticate(authenticationToken);
 
-        // 3 인증 정보를 기반으로 JWT 토큰 생성
-        TokenDto tokenDto = jwtProvider.generateToken(authentication);
-        // 4. RefreshToken 저장
+        // 3. UserDetailsImpl에서 직접 userId 가져오기
+        UserDetailsImpl userDetails = (UserDetailsImpl) authentication.getPrincipal();
+        Long userId = userDetails.getUserId();
+
+        // 4. 인증 정보를 기반으로 JWT 토큰 생성
+        TokenDto tokenDto = jwtProvider.generateToken(authentication, userId.toString());
+        // 5. RefreshToken 저장
         RefreshToken refreshToken = RefreshToken.builder()
                 .key(authentication.getName())
                 .value(tokenDto.getRefreshToken())

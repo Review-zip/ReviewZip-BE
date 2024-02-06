@@ -54,4 +54,9 @@ public class UserDetailsImpl implements UserDetails {
     public boolean isEnabled() {
         return true;
     }
+
+    // 사용자의 ID를 가져오는 메소드
+    public Long getUserId() {
+        return user.getId();  // Users 엔티티의 getId() 메소드 호출
+    }
 }

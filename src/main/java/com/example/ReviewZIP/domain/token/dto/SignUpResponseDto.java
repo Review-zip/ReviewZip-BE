@@ -11,10 +11,9 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @Builder
 public class SignUpResponseDto {
-
     private String nickname;
 
-    public static SignUpResponseDto toDto(Users user) {
+    public static SignUpResponseDto signUpResponseDto(Users user) {
         return SignUpResponseDto.builder()
                 .nickname(user.getNickname())
                 .build();

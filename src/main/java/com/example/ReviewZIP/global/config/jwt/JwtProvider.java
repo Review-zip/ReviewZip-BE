@@ -13,6 +13,7 @@ import org.springframework.security.authentication.UsernamePasswordAuthenticatio
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.User;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Component;
@@ -27,8 +28,8 @@ import java.util.stream.Collectors;
 @Slf4j
 @ConfigurationProperties("jwt")
 public class JwtProvider {
-    private static final long ACCESS_TOKEN_EXPIRATION_TIME = 1000 * 60 * 3000;
-    private static final long REFRESH_TOKEN_EXPIRATION_TIME = 1000 * 24 * 60 * 60;
+    private static final long ACCESS_TOKEN_EXPIRATION_TIME = 1000 * 60 * 60;
+    private static final long REFRESH_TOKEN_EXPIRATION_TIME = 1000 * 24 * 60 * 60 * 7;
 
     private static final String AUTHORITIES_KEY = "auth";
     private static final String BEARER_TYPE = "Bearer";
@@ -40,7 +41,7 @@ public class JwtProvider {
     }
 
     // 유저 정보를 가지고 AccessToken, RefreshToken을 생성하는 메서드
-    public TokenDto generateToken(Authentication authentication) {
+    public TokenDto generateToken(Authentication authentication, String userId) {
         // 권한 가져오기
         String authorities = authentication.getAuthorities().stream()
                 .map(GrantedAuthority::getAuthority)
@@ -52,7 +53,8 @@ public class JwtProvider {
         Date accessTokenExpiresIn = new Date(now + ACCESS_TOKEN_EXPIRATION_TIME);
         String accessToken  = Jwts.builder()
                 .setSubject(authentication.getName())
-                .claim("auth", authorities)
+                .claim(AUTHORITIES_KEY, authorities)
+                .claim("userId", userId)
                 .setExpiration(accessTokenExpiresIn)
                 .signWith(key, SignatureAlgorithm.HS256)
                 .compact();
@@ -81,13 +83,17 @@ public class JwtProvider {
 
         // 클레임에서 권한 정보 가져오기
         Collection<? extends GrantedAuthority> authorities =
-                Arrays.stream(claims.get("auth").toString().split(","))
+                Arrays.stream(claims.get(AUTHORITIES_KEY).toString().split(","))
                         .map(SimpleGrantedAuthority::new)
                         .collect(Collectors.toList());
 
         // UserDetails 객체를 만들어서 Authentication 리턴
         UserDetails principal = new User(claims.getSubject(), "", authorities);
-        return new UsernamePasswordAuthenticationToken(principal, "", authorities);
+
+        // 추출된 userId를 SecurityContextHolder에 저장
+        SecurityContextHolder.getContext().setAuthentication(new UsernamePasswordAuthenticationToken(principal, "", authorities));
+
+        return SecurityContextHolder.getContext().getAuthentication();
     }
 
     // 토큰 정보를 검증하는 메서드
