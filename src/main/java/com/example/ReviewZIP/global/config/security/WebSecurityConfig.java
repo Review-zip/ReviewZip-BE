@@ -23,6 +23,7 @@ public class WebSecurityConfig {
     private final CorsFilter corsFilter;
     private final JwtAuthenticationEntryPoint jwtAuthenticationEntryPoint;
     private final JwtAccessDeniedHandler jwtAccessDeniedHandler;
+    private final JwtRequestFilter jwtRequestFilter;
 
     @Bean
     public SecurityFilterChain apiFilterChain(HttpSecurity http) throws Exception {
@@ -31,6 +32,7 @@ public class WebSecurityConfig {
                 .csrf(AbstractHttpConfigurer::disable)
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .authorizeHttpRequests(authorize -> authorize
+                        .requestMatchers("/", "/**").permitAll()
                         .requestMatchers(new AntPathRequestMatcher("/auth/**")).permitAll()
                         .requestMatchers(new AntPathRequestMatcher("/S3/**")).permitAll()
                         .requestMatchers("/swagger-resources/**", "/swagger-ui/**", "/v3/api-docs/**", "/api-docs/**", "/").permitAll()
@@ -41,7 +43,8 @@ public class WebSecurityConfig {
                         .accessDeniedHandler(jwtAccessDeniedHandler))
 
                 // JwtFilter를 addFilterBefore로 등록했던 JwtSecurityConfig 클래스를 적용
-                .addFilterBefore(new JwtRequestFilter(jwtProvider), UsernamePasswordAuthenticationFilter.class);
+                .apply(new JwtSecurityConfig(jwtProvider));
+
         return http.build();
 
     }
