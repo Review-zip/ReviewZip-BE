@@ -152,8 +152,8 @@ public class PostsService {
         return PostsConverter.toPostInfoResultDto(post, user, checkLike, checkScrab, createdAt);
     }
 
-    List<PostResponseDto.PostInfoDto> getPostInfoDtoList(List<PostHashtags> postList){
-        return postList.stream()
+    List<PostResponseDto.PostInfoDto> getPostInfoDtoList(List<PostHashtags> postHashtagList){
+        return postHashtagList.stream()
                 .map(postHashtag -> getPostInfoDto(postHashtag.getPost().getId()))
                 .collect(Collectors.toList());
     }
