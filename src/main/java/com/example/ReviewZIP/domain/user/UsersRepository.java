@@ -16,10 +16,6 @@ public interface UsersRepository extends JpaRepository<Users, Long> {
     @Query("SELECT u FROM Users u WHERE u.nickname LIKE :nickname%")
     List<Users> findByNickname(String nickname);
 
-    boolean existsBySocial(String id);
-
-    Users getBySocial(String userId);
-
     boolean existsByEmail(String email);
 
     Optional<Users> findByEmail(String email);

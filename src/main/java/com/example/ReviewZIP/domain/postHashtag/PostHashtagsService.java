@@ -1,8 +1,6 @@
 package com.example.ReviewZIP.domain.postHashtag;
 
 import com.example.ReviewZIP.domain.post.PostsRepository;
-import com.example.ReviewZIP.domain.searchHistory.SearchHistoriesRepository;
-import com.example.ReviewZIP.domain.user.UsersRepository;
 import com.example.ReviewZIP.global.redis.RedisService;
 import com.example.ReviewZIP.global.response.code.resultCode.ErrorStatus;
 import com.example.ReviewZIP.global.response.exception.handler.PostsHandler;
@@ -20,8 +18,6 @@ public class PostHashtagsService {
     private final PostHashtagsRepository postHashtagsRepository;
     private final RedisService redisService;
     private final PostsRepository postsRepository;
-    private final UsersRepository usersRepository;
-    private final SearchHistoriesRepository searchHistoriesRepository;
 
     @Transactional
     public void addHashtags(String query, Long postId) {

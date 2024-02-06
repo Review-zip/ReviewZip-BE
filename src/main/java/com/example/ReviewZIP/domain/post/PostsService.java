@@ -21,7 +21,6 @@ import com.example.ReviewZIP.global.response.exception.handler.PostsHandler;
 import com.example.ReviewZIP.global.response.exception.handler.UsersHandler;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -49,15 +48,12 @@ public class PostsService {
     private final PostHashtagsRepository postHashtagsRepository;
     private final FollowsRepository followsRepository;
 
-    public Page<Posts> searchPostByHashtag (Long id, Integer page, Integer size){
-        Page<PostHashtags> postHashtagsList = postHashtagsRepository.findPostHashtagsById(id, PageRequest.of(page,size));
+    public List<Posts> searchPostByHashtag (Long id){
+        List<PostHashtags> postHashtagsList = postHashtagsRepository.findPostHashtagsById(id);
 
-        List<Posts> postsList = postHashtagsList.getContent().stream()
+        return postHashtagsList.stream()
                 .map(PostHashtags::getPost)
                 .collect(Collectors.toList());
-
-        return new PageImpl<>(postsList, postHashtagsList.getPageable(), postHashtagsList.getTotalElements());
-
     }
     @Transactional
     public Posts createPost(PostRequestDto postRequestDto) {
@@ -105,7 +101,7 @@ public class PostsService {
             boolean checkScrab = scrabsRepository.existsByUserAndPost(user, post);
             String createdAt = getCreatedAt(post.getCreatedAt());
 
-            return PostsConverter.toPostInfoResultDto(user, post, checkLike, checkScrab, createdAt);
+            return PostsConverter.toPostInfoResultDto(post, user, checkLike, checkScrab, createdAt);
         }
         throw new PostsHandler(ErrorStatus.NON_USER_POST_REQUIRED);
     }
@@ -140,7 +136,7 @@ public class PostsService {
                 boolean checkScrab = scrabsRepository.existsByUserAndPost(user, post);
                 String createdAt = getCreatedAt(post.getCreatedAt());
 
-                randomPostInfoDtos.add(PostsConverter.toPostInfoResultDto(user, post, checkLike, checkScrab, createdAt));
+                randomPostInfoDtos.add(PostsConverter.toPostInfoResultDto(post, user, checkLike, checkScrab, createdAt));
             }
         }
 
@@ -157,7 +153,13 @@ public class PostsService {
 
         String createdAt = getCreatedAt(post.getCreatedAt());
 
-        return PostsConverter.toPostInfoResultDto(user, post, checkLike, checkScrab, createdAt);
+        return PostsConverter.toPostInfoResultDto(post, user, checkLike, checkScrab, createdAt);
+    }
+
+    List<PostResponseDto.PostInfoDto> getPostInfoDtoList(List<Posts> postList){
+        return postList.stream()
+                .map(post -> getPostInfoDto(post.getId()))
+                .collect(Collectors.toList());
     }
 
     public String getCreatedAt(LocalDateTime createdAt){

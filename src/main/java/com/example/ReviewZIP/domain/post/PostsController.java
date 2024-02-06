@@ -31,18 +31,16 @@ public class PostsController {
     })
     @Parameters({
             @Parameter(name = "hashtagId", description = "해시태그 아이디"),
-            @Parameter(name = "page", description = "페이지 번호"),
-            @Parameter(name = "size", description = "페이징 사이즈")
     })
-    public ApiResponse<PostResponseDto.PostPreviewListDto> searchPostsByHashtagId(@PathVariable Long hashtagId, @RequestParam(defaultValue = "0") Integer page, @RequestParam(defaultValue = "0") Integer size) {
-        Page<Posts> postsPage = postsService.searchPostByHashtag(hashtagId, page, size);
-        PostResponseDto.PostPreviewListDto postPreviewListDto = PostsConverter.toPostPreviewListDto(postsPage);
-        return ApiResponse.onSuccess(postPreviewListDto);
+    public ApiResponse<List<PostResponseDto.PostInfoDto>> searchPostsByHashtagId(@PathVariable Long hashtagId) {
+        List<Posts> postList = postsService.searchPostByHashtag(hashtagId);
+        List<PostResponseDto.PostInfoDto> getPostInfoDtoList = postsService.getPostInfoDtoList(postList);
+        return ApiResponse.onSuccess(getPostInfoDtoList);
     }
 
     // 특정 게시글의 정보 가져오기
     @GetMapping("/{postId}")
-    @Operation(summary = "특정 게시글의 정보 가져오기 API",description = "게시글의 id를 이용하여 상세정보 출력, UserInfoDto & ImageListDto & PostInfoDto 이용")
+    @Operation(summary = "특정 게시글의 정보 가져오기 API",description = "게시글의 id를 이용하여 상세정보 출력, UserInfoDto, ImageDto, HashtagDto, PostInfoDto 이용")
     @ApiResponses({
             @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "COMMON200",description = "OK, 성공"),
             @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "POST401", description = "해당 게시물이 존재하지 않습니다.",content = @Content(schema = @Schema(implementation = ApiResponse.class))),
@@ -93,7 +91,7 @@ public class PostsController {
     }
 
     @GetMapping("/{postId}/users")
-    @Operation(summary = "게시물에 공감을 누른 유저리스트를 검색하는 API",description = "게시물 아이디를 조회하여 게시물에 공감을 누른 유저 리스트를 검색, 반환 시 UserPreviewListDto 사용")
+    @Operation(summary = "게시물에 공감을 누른 유저리스트를 검색하는 API",description = "게시물 아이디를 조회하여 게시물에 공감을 누른 유저 리스트를 검색, PostUserLikeDto 사용")
     @ApiResponses({
             @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "COMMON200",description = "OK, 성공"),
     })
@@ -124,7 +122,7 @@ public class PostsController {
     }
 
     @PostMapping("/{postId}/like")
-    @Operation(summary = "포스트에 공감 생성 API",description = "포스트에 공감을 생성하는 기능, 입력 시 PostLikesDto 사용")
+    @Operation(summary = "포스트에 공감 생성 API",description = "포스트에 공감을 생성하는 기능")
     @ApiResponses({
             @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "COMMON200",description = "OK, 성공"),
             @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "USER408", description = "유저를 찾을 수 없음",content = @Content(schema = @Schema(implementation = ApiResponse.class))),
