@@ -19,6 +19,7 @@ public class UserStoresConverter {
 
     public static UserStoresResponseDto.StoreInfoDto toStoreInfoDto(UserStores userStores) {
         return UserStoresResponseDto.StoreInfoDto.builder()
+                .storeId(userStores.getId())
                 .latitude(userStores.getLatitude())
                 .longitude(userStores.getLongitude())
                 .place(userStores.getName())

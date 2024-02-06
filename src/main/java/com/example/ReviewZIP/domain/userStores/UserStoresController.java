@@ -32,18 +32,6 @@ public class UserStoresController {
         return ApiResponse.onSuccess(SuccessStatus._OK);
     }
 
-    @GetMapping("/{userId}")
-    @Operation(summary = "특정 유저의 관심 장소 목록 API",description = "특정 특정 유저의 관심 장소 목록을 가져온다, 반환 시 StoreInfoListDto 사용")
-    @ApiResponses({
-            @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "COMMON200",description = "OK, 성공"),
-            @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "USER404", description = "유저가 존재하지 않습니다",content = @Content(schema = @Schema(implementation = ApiResponse.class))),
-    })
-    @Parameters({
-            @Parameter(name = "userId", description = "유저의 아이디"),
-    })
-    public ApiResponse<UserStoresResponseDto.StoreInfoListDto> getStoresByUser(@PathVariable Long userId) {
-        return ApiResponse.onSuccess(userStoresService.getStoreInfo(userId));
-    }
 
     @GetMapping("/location")
     @Operation(summary = "특정 위치의 장소가 관심 장소 인지 판별하는 API",description = "특정 위치의 위도 경도 값을 바탕으로 관심 장소인지 판별하는 기능")
