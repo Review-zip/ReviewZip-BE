@@ -16,10 +16,6 @@ public interface FollowsRepository extends JpaRepository<Follows, Long> {
 
     Follows getBySenderAndReceiver(Users sender, Users receiver);
 
-    Integer countBySenderId(Long userId);
-
-    Integer countByReceiverId(Long userid);
-
     boolean existsBySenderAndReceiver(Users sender, Users receiver);
 
 }

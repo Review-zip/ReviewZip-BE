@@ -98,6 +98,7 @@ public class PostsConverter {
             boolean isFollowing = followingIdList.contains(user.getId());
             PostResponseDto.PostUserLikeDto postUserLikeDto = PostResponseDto.PostUserLikeDto.builder()
                     .userId(user.getId())
+                    .name(user.getName())
                     .nickname(user.getNickname())
                     .profileUrl(user.getProfileUrl())
                     .following(isFollowing)

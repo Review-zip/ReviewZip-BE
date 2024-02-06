@@ -75,6 +75,7 @@ public class PostResponseDto {
     @AllArgsConstructor
     public static class PostUserLikeDto{
         private Long userId;
+        private String name;
         private String nickname;
         private String profileUrl;
         private boolean following;

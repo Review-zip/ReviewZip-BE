@@ -124,7 +124,7 @@ public class UsersController {
     public ApiResponse<List<PostResponseDto.PostInfoDto>> getUserPostList(){
         // 토큰값 받아서 유저확인 하는 부분, 일단 1L로 대체
         List<Posts> postList = usersService.getPostList(1L);
-        List<PostResponseDto.PostInfoDto> postInfoDtoList = usersService.getPostInfoDtoList(postList);
+        List<PostResponseDto.PostInfoDto> postInfoDtoList = usersService.getPostInfoDtoList(1L, postList);
         return ApiResponse.onSuccess(postInfoDtoList);
     }
 
@@ -136,7 +136,7 @@ public class UsersController {
     })
     public ApiResponse<List<PostResponseDto.PostInfoDto>> getUserScrabList() {
         List<Scrabs> scrabList = usersService.getScrabList(1L);
-        List<PostResponseDto.PostInfoDto> scrabInfoDtoList = usersService.getScrabInfoDtoList(scrabList);
+        List<PostResponseDto.PostInfoDto> scrabInfoDtoList = usersService.getScrabInfoDtoList(1L, scrabList);
         return ApiResponse.onSuccess(scrabInfoDtoList);
     }
 
@@ -151,7 +151,7 @@ public class UsersController {
     })
     public ApiResponse<List<PostResponseDto.PostInfoDto>> getOtherPostList(@PathVariable(name = "userId") Long userId){
         List<Posts> postList = usersService.getPostList(userId);
-        List<PostResponseDto.PostInfoDto> postInfoDtoList = usersService.getPostInfoDtoList(postList);
+        List<PostResponseDto.PostInfoDto> postInfoDtoList = usersService.getPostInfoDtoList(userId, postList);
         return ApiResponse.onSuccess(postInfoDtoList);
 
     }
@@ -168,12 +168,12 @@ public class UsersController {
      })
     public ApiResponse<List<PostResponseDto.PostInfoDto>> getOtherScrabList(@PathVariable(name = "userId") Long userId) {
          List<Scrabs> scrabList = usersService.getScrabList(userId);
-         List<PostResponseDto.PostInfoDto> scrabInfoDtoList = usersService.getScrabInfoDtoList(scrabList);
+         List<PostResponseDto.PostInfoDto> scrabInfoDtoList = usersService.getScrabInfoDtoList(userId, scrabList);
          return ApiResponse.onSuccess(scrabInfoDtoList);
      }
 
     @GetMapping("/{userId}")
-    @Operation(summary = "특정 유저의 정보(프로필) API 가져오기",description = "user id를 받아 특정 유저의 정보(프로필) 가져오기, OtherUserInfoDto 이용")
+    @Operation(summary = "특정 유저의 정보(프로필) 가져오기 API",description = "user id를 받아 특정 유저의 정보(프로필) 가져오기, OtherUserInfoDto 이용")
     @ApiResponses({
             @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "COMMON200",description = "OK, 성공"),
             @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "USER404", description = "유저가 존재하지 않습니다",content = @Content(schema = @Schema(implementation = ApiResponse.class))),
@@ -187,7 +187,7 @@ public class UsersController {
      }
 
     @GetMapping("/me")
-    @Operation(summary = "나의 정보(프로필) API 가져오기",description = " 나의 정보를 가져오기, UserInfoDto 이용")
+    @Operation(summary = "나의 정보(프로필) 가져오기 API",description = " 나의 정보를 가져오기, UserInfoDto 이용")
     @ApiResponses({
             @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "COMMON200",description = "OK, 성공"),
     })

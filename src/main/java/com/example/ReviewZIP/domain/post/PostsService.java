@@ -15,10 +15,7 @@ import com.example.ReviewZIP.domain.scrab.ScrabsRepository;
 import com.example.ReviewZIP.domain.user.Users;
 import com.example.ReviewZIP.domain.user.UsersRepository;
 import com.example.ReviewZIP.global.response.code.resultCode.ErrorStatus;
-import com.example.ReviewZIP.global.response.exception.handler.ImagesHandler;
-import com.example.ReviewZIP.global.response.exception.handler.PostLikesHandler;
-import com.example.ReviewZIP.global.response.exception.handler.PostsHandler;
-import com.example.ReviewZIP.global.response.exception.handler.UsersHandler;
+import com.example.ReviewZIP.global.response.exception.handler.*;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -48,13 +45,12 @@ public class PostsService {
     private final PostHashtagsRepository postHashtagsRepository;
     private final FollowsRepository followsRepository;
 
-    public List<Posts> searchPostByHashtag (Long id){
-        List<PostHashtags> postHashtagsList = postHashtagsRepository.findPostHashtagsById(id);
-
-        return postHashtagsList.stream()
-                .map(PostHashtags::getPost)
-                .collect(Collectors.toList());
+    public List<PostHashtags> searchPostByHashtag (Long hashtagId){
+        PostHashtags postHashtags = postHashtagsRepository.findById(hashtagId).orElseThrow(()->new HashtagHandler(ErrorStatus.HASHTAG_NOT_FOUND));
+        String tagName = postHashtags.getHashtag();
+        return postHashtagsRepository.findAllByHashtag(tagName);
     }
+
     @Transactional
     public Posts createPost(PostRequestDto postRequestDto) {
         Users user = usersRepository.findById(postRequestDto.getUserId()).orElseThrow(() -> new UsersHandler(ErrorStatus.USER_NOT_FOUND));
@@ -156,9 +152,9 @@ public class PostsService {
         return PostsConverter.toPostInfoResultDto(post, user, checkLike, checkScrab, createdAt);
     }
 
-    List<PostResponseDto.PostInfoDto> getPostInfoDtoList(List<Posts> postList){
+    List<PostResponseDto.PostInfoDto> getPostInfoDtoList(List<PostHashtags> postList){
         return postList.stream()
-                .map(post -> getPostInfoDto(post.getId()))
+                .map(postHashtag -> getPostInfoDto(postHashtag.getPost().getId()))
                 .collect(Collectors.toList());
     }
 

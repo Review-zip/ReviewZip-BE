@@ -133,7 +133,7 @@ public class UsersService {
         }
     }
 
-    public PostResponseDto.PostInfoDto getPostInfoDto(Long postId){
+    public PostResponseDto.PostInfoDto getPostInfoDto(Long postId, Long userId){
         // 좋아요와 스크랩 표시를 위하여 1L로 해당 유저를 대체
         Users user = usersRepository.getById(1L);
         Posts post = postsRepository.findById(postId).orElseThrow(()->new PostsHandler(ErrorStatus.POST_NOT_FOUND));
@@ -145,15 +145,15 @@ public class UsersService {
         return PostsConverter.toPostInfoResultDto(post, user, checkLike, checkScrab, createdAt);
     }
 
-    List<PostResponseDto.PostInfoDto> getPostInfoDtoList(List<Posts> postList){
+    List<PostResponseDto.PostInfoDto> getPostInfoDtoList(Long userId, List<Posts> postList){
         return postList.stream()
-                .map(post -> getPostInfoDto(post.getId()))
+                .map(post -> getPostInfoDto(post.getId(), userId))
                 .collect(Collectors.toList());
     }
 
-    List<PostResponseDto.PostInfoDto> getScrabInfoDtoList(List<Scrabs> scrabList){
+    List<PostResponseDto.PostInfoDto> getScrabInfoDtoList(Long userId, List<Scrabs> scrabList){
         return scrabList.stream()
-                .map(scrab -> getPostInfoDto(scrab.getPost().getId()))
+                .map(scrab -> getPostInfoDto(scrab.getPost().getId(), 1L))
                 .collect(Collectors.toList());
     }
 
