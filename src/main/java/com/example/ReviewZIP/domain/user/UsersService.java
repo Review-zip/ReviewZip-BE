@@ -45,6 +45,7 @@ public class UsersService {
     private final ScrabsRepository scrabsRepository;
     private final PostLikesRepository postLikesRepository;
     private final UserDetailsServiceImpl userDetailsService;
+    private final S3Service s3Service;
 
     public Long getUserId(UserDetails user){
         String username = user.getUsername();
@@ -99,12 +100,18 @@ public class UsersService {
         return UsersConverter.toUserInfoDto(usersRepository.findByEmail(email).orElseThrow(() -> new UsersHandler(ErrorStatus.USER_NOT_FOUND)));
     }
 
-    public UserRequestDto.UserProfileUrlDto updateProfileUrl(Long userId, UserRequestDto.UserProfileUrlDto userProfileUrlDto){
+    public UserRequestDto.UserProfileUrlDto updateProfileUrl(Long userId, MultipartFile image){
         Users user = usersRepository.findById(userId).orElseThrow(() -> new UsersHandler(ErrorStatus.USER_NOT_FOUND));
-        user.setProfileUrl(userProfileUrlDto.getProfileUrl());
+
+        if (user.getProfileUrl() != null && !user.getProfileUrl().isEmpty()) {
+            s3Service.deleteFile(user.getProfileUrl());
+        }
+
+        S3Result uploadResult = s3Service.uploadFile(image);
+        user.setProfileUrl(uploadResult.getFileUrl());
         usersRepository.save(user);
 
-        return userProfileUrlDto;
+        return new UserRequestDto.UserProfileUrlDto(uploadResult.getFileUrl());
     }
 
     public UserRequestDto.UserNicknameDto updateUserNickname(Long userId, UserRequestDto.UserNicknameDto userNicknameDto){

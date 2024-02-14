@@ -1,13 +1,12 @@
 package com.example.ReviewZIP.global.s3;
 
+import com.amazonaws.AmazonServiceException;
 import com.amazonaws.services.s3.AmazonS3Client;
 import com.amazonaws.services.s3.model.CannedAccessControlList;
+import com.amazonaws.services.s3.model.DeleteObjectRequest;
 import com.amazonaws.services.s3.model.ObjectMetadata;
 import com.amazonaws.services.s3.model.PutObjectRequest;
 
-import com.example.ReviewZIP.domain.image.Images;
-import com.example.ReviewZIP.domain.image.ImagesRepository;
-import com.example.ReviewZIP.domain.user.Users;
 import com.example.ReviewZIP.global.s3.dto.S3Result;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
@@ -18,12 +17,10 @@ import org.springframework.web.server.ResponseStatusException;
 
 import java.io.IOException;
 import java.io.InputStream;
-import java.time.LocalDateTime;
-import java.time.format.DateTimeFormatter;
 import java.util.UUID;
 @Service
 @RequiredArgsConstructor
-public class S3Service {
+public class    S3Service {
     @Value("${cloud.aws.s3.bucket}")
     private String bucket;
 
@@ -60,5 +57,14 @@ public class S3Service {
         }
 
         return new S3Result(fileUrl + "/ReviewImage/" + fileName);
+    }
+
+    public void deleteFile(String fileUrl) {
+        try {
+            String fileName = fileUrl.substring(fileUrl.lastIndexOf("/") + 1);
+            amazonS3Client.deleteObject(new DeleteObjectRequest(bucket, "ReviewImage/" + fileName));
+        } catch (AmazonServiceException e) {
+            throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, "S3 파일 삭제 실패");
+        }
     }
 }

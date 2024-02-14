@@ -35,6 +35,7 @@ public enum SuccessStatus implements BaseCode {
     GET_MY_FOLLOWING_LIST_SUCCESS(HttpStatus.OK,"USER214", "내 팔로잉 목록 가져오기 성공"),
     GET_SPECIFIC_USER_FOLLOWER_LIST_SUCCESS(HttpStatus.OK,"USER215", "특정유저의 팔로워 목록 가져오기 성공"),
     GET_SPECIFIC_USER_FOLLOWING_LIST_SUCCESS(HttpStatus.OK,"USER216", "특정유저의 팔로잉 목록 가져오기 성공"),
+    USER_PROFILE_REGISTER_SUCCESS(HttpStatus.OK, "USER217", "프로필 이미지 등록하기 성공"),
 
     // Posts
     POST_S3_IMAGE_UPLOAD_SUCCESS(HttpStatus.OK,"POST201", "S3 이미지 업로드 성공"),

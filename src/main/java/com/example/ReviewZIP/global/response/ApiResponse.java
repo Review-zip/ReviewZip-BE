@@ -1,6 +1,7 @@
 package com.example.ReviewZIP.global.response;
 
 import com.example.ReviewZIP.global.response.code.BaseCode;
+import com.example.ReviewZIP.global.response.code.BaseErrorCode;
 import com.example.ReviewZIP.global.response.code.resultCode.SuccessStatus;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
@@ -26,7 +27,7 @@ public class ApiResponse<T> {
         return new ApiResponse<>(true, SuccessStatus._OK.getCode() , SuccessStatus._OK.getMessage(), result);
     }
 
-    public static <T> ApiResponse<T> of(BaseCode code, T result){
+    public static <T> ApiResponse<T> of(BaseErrorCode code, T result){
             return new ApiResponse<>(true, code.getReasonHttpStatus().getCode() , code.getReasonHttpStatus().getMessage(), result);
     }
 

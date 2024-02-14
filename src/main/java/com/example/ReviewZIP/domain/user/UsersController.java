@@ -10,8 +10,8 @@ import com.example.ReviewZIP.domain.user.dto.response.UserResponseDto;
 import com.example.ReviewZIP.domain.userStores.UserStoresService;
 import com.example.ReviewZIP.domain.userStores.dto.response.UserStoresResponseDto;
 import com.example.ReviewZIP.global.response.ApiResponse;
+import com.example.ReviewZIP.global.response.code.resultCode.ErrorStatus;
 import com.example.ReviewZIP.global.response.code.resultCode.SuccessStatus;
-import com.example.ReviewZIP.global.security.UserDetailsImpl;
 import com.example.ReviewZIP.global.security.UserDetailsServiceImpl;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
@@ -23,6 +23,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
 
@@ -217,15 +218,21 @@ public class UsersController {
         return ApiResponse.onSuccess(usersService.getUserInfo(user.getUsername()));
     }
 
-    @PatchMapping("/me/profileUrl")
-    @Operation(summary = "프로필 이미지 수정하기 API", description = "프로필 이미지 수정하기, UserProfileDto 사용")
+    @PatchMapping("me/profile")
+    @Operation(summary = "프로필 이미지 수정하기 API", description = "마이페이지 프로필 수정하기, UserProfileDto 사용")
     @ApiResponses({
             @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "COMMON200", description = "OK, 성공"),
-            @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "USER404", description = "유저가 존재하지 않습니다",content = @Content(schema = @Schema(implementation = ApiResponse.class))),
+            @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "USER404", description = "유저가 존재하지 않습니다", content = @Content(schema = @Schema(implementation = ApiResponse.class))),
     })
-    public ApiResponse<UserRequestDto.UserProfileUrlDto> updateProfileUrl(@RequestBody UserRequestDto.UserProfileUrlDto userProfileUrlDto){
+    public ApiResponse<UserRequestDto.UserProfileUrlDto> updateProfileUrl(
+            @AuthenticationPrincipal UserDetails user,
+            @RequestPart("image") MultipartFile image,
+            @RequestPart("data") UserRequestDto.UserProfileUrlDto profileUrlData){
 
-        UserRequestDto.UserProfileUrlDto ProfileUrlDto = usersService.updateProfileUrl(1L, userProfileUrlDto);
+        if(image.isEmpty()) {
+            return ApiResponse.of(ErrorStatus.IMAGE_NOT_PROVIDED, null);
+        }
+        UserRequestDto.UserProfileUrlDto ProfileUrlDto = usersService.updateProfileUrl(usersService.getUserId(user), image);
         return ApiResponse.onSuccess(ProfileUrlDto);
     }
 
